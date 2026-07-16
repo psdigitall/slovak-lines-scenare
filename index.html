@@ -20,6 +20,12 @@ button,a{font:inherit}
 .footer{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 30px 26px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.footer strong{color:var(--ink)}
 dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;box-shadow:0 28px 90px rgba(17,17,17,.28)}dialog::backdrop{background:rgba(17,17,17,.62);backdrop-filter:blur(3px)}.dialog-body{padding:26px}.dialog-kicker{display:inline-flex;margin-bottom:14px;padding:6px 10px;border-radius:999px;background:var(--soft-red);color:#a9000f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}dialog h2{margin:0;font-size:30px;line-height:1.05;letter-spacing:-.04em}dialog p{margin:14px 0 24px;color:var(--muted);line-height:1.65}.close{min-height:46px;padding:11px 18px;border:0;border-radius:999px;background:#111;color:#fff;font-weight:800;cursor:pointer}.close:focus-visible{outline:3px solid rgba(255,0,22,.28);outline-offset:3px}
 @media(max-width:680px){.page{width:min(100% - 20px,1040px);margin:10px auto;border-radius:24px}.header,.catalog{padding-left:18px;padding-right:18px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:36px}.scenario{grid-template-columns:48px minmax(0,1fr);gap:14px;padding:15px}.number{width:46px;height:46px;border-radius:15px}.open{grid-column:2;margin-top:2px}.catalog-head,.footer{align-items:flex-start;flex-direction:column}}
+.status-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}.status-row .status{margin:0}
+.approval-status{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eee9e5;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.approval-status::before{content:"";width:7px;height:7px;margin-right:6px;border-radius:50%;background:#aaa19a}
+.approval-status.approved{background:#dff7e9;color:#087141}.approval-status.approved::before{background:#1a9b60}
+.scenario--approved{border-color:#9bd8b8;background:#f2fbf6;box-shadow:inset 5px 0 0 #1a9b60}
+.scenario--approved .number,.scenario--approved .open b{background:#1a9b60}
 @media(prefers-reduced-motion:reduce){.scenario{transition:none}}
 </style>
 </head>
@@ -36,10 +42,10 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
     <div class="catalog-head"><h2 id="catalog-title">Zoznam scenárov</h2><p class="legend">Červené číslo = hotový detail</p></div>
     <ol class="scenarios">
       <li>
-        <a class="scenario scenario--ready" href="scenare/vodici-odovzdavanie-autobusu.html" aria-label="Otvoriť scenár 1: Keď odovzdávaš autobus kolegovi">
+        <a class="scenario scenario--ready" href="scenare/vodici-odovzdavanie-autobusu.html" data-scenario-id="vodici-odovzdavanie-autobusu" aria-label="Otvoriť scenár 1: Keď odovzdávaš autobus kolegovi">
           <span class="number" aria-hidden="true">1</span>
           <span class="scenario-copy">
-            <span class="status status--ready">Hotový scenár</span>
+            <span class="status-row"><span class="status status--ready">Hotový scenár</span><span class="approval-status" data-approval-status>Čaká na schválenie</span></span>
             <strong>Keď odovzdávaš autobus kolegovi</strong>
             <small>VODIČI · Mirko + Maťo</small>
           </span>
@@ -47,10 +53,10 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         </a>
       </li>
       <li>
-        <a class="scenario scenario--ready" href="scenare/sziget-nalahko.html" aria-label="Otvoriť scenár 2: Sziget naľahko">
+        <a class="scenario scenario--ready" href="scenare/sziget-nalahko.html" data-scenario-id="sziget-nalahko" aria-label="Otvoriť scenár 2: Sziget naľahko">
           <span class="number" aria-hidden="true">2</span>
           <span class="scenario-copy">
-            <span class="status status--ready">Hotový scenár</span>
+            <span class="status-row"><span class="status status--ready">Hotový scenár</span><span class="approval-status" data-approval-status>Čaká na schválenie</span></span>
             <strong>Sziget naľahko</strong>
             <small>CESTUJÚCI · Maťo Vitek + Timea</small>
           </span>
@@ -158,6 +164,28 @@ const dialogTitle = document.querySelector('#dialog-title');
 document.querySelectorAll('[data-number]').forEach((button) => {button.addEventListener('click', () => {dialogTitle.textContent = `Ukážkový scenár ${button.dataset.number}`;dialog.showModal();});});
 document.querySelector('.close').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', (event) => {if (event.target === dialog) dialog.close();});
+
+const reviewCards = [...document.querySelectorAll('[data-scenario-id]')];
+function paintReviewStatus(card) {
+  const badge = card.querySelector('[data-approval-status]');
+  const storageKey = `sl-scenario-review:${card.dataset.scenarioId}`;
+  let isApproved = false;
+  try {
+    const review = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    isApproved = review.approved === true;
+  } catch (error) {
+    isApproved = false;
+  }
+  card.classList.toggle('scenario--approved', isApproved);
+  badge.classList.toggle('approved', isApproved);
+  badge.textContent = isApproved ? 'Schválené klientom' : 'Čaká na schválenie';
+}
+function paintAllReviewStatuses() {reviewCards.forEach(paintReviewStatus);}
+paintAllReviewStatuses();
+window.addEventListener('pageshow', paintAllReviewStatuses);
+window.addEventListener('storage', (event) => {
+  if (event.key?.startsWith('sl-scenario-review:')) paintAllReviewStatuses();
+});
 </script>
 </body>
 </html>

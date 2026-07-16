@@ -50,6 +50,25 @@ h1{max-width:820px;margin:0;font-size:clamp(30px,5vw,54px);line-height:.98;lette
   text-transform:uppercase;letter-spacing:.1em}
 .meta-card .val{font-size:16px;font-weight:700;letter-spacing:-.01em}
 
+/* KLIENTSKE SCHVÁLENIE */
+.client-review{padding:0 22px 22px;background:#fff;border-bottom:1px solid var(--line)}
+.client-review-inner{position:relative;display:grid;grid-template-columns:minmax(230px,.62fr) minmax(0,1.38fr);
+  gap:18px;align-items:stretch;padding:18px;border:2px solid #ded7d1;border-radius:24px;background:#faf8f6;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.client-review-inner.is-approved{border-color:#1a9b60;background:#effaf4;box-shadow:inset 5px 0 0 #1a9b60}
+.approval-control{display:flex;align-items:center;gap:13px;min-height:82px;padding:14px 16px;border-radius:18px;
+  background:#fff;border:1px solid var(--line);cursor:pointer}
+.approval-control input{flex:none;width:28px;height:28px;margin:0;accent-color:#1a9b60;cursor:pointer}
+.approval-copy{display:flex;flex-direction:column;gap:3px}.approval-copy strong{font-size:17px;line-height:1.15}
+.approval-copy small{color:var(--muted);font-size:12px;font-weight:700}.is-approved .approval-copy small{color:#087141}
+.client-notes-control{display:flex;flex-direction:column;gap:7px}.field-label{font-size:12px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.client-notes-control textarea{width:100%;min-height:82px;resize:vertical;padding:13px 14px;border:1px solid #cfc7c1;
+  border-radius:16px;background:#fff;color:var(--ink);font:inherit;font-size:15px;line-height:1.45}
+.client-notes-control textarea:focus{outline:3px solid rgba(255,0,22,.18);border-color:var(--sl-red)}
+.save-status{position:absolute;right:20px;bottom:2px;transform:translateY(100%);padding-top:3px;color:var(--muted);
+  font-size:10px;font-weight:700}
+
 /* CALLOUTS (anti-duplicita, info) */
 .callouts{padding:0 22px 6px;display:grid;gap:12px;background:#fff}
 .callout{padding:14px 16px;border-radius:18px;border:1px solid var(--line);
@@ -103,6 +122,7 @@ pre.script{white-space:pre-wrap;word-wrap:break-word;margin:18px 0 0;padding:18p
 @media (max-width:840px){
   .topbar,.footer{align-items:flex-start;flex-direction:column}
   .meta-grid,.content{grid-template-columns:1fr}
+  .client-review-inner{grid-template-columns:1fr}
 }
 @media print{
   body{background:#fff}
@@ -131,12 +151,25 @@ pre.script{white-space:pre-wrap;word-wrap:break-word;margin:18px 0 0;padding:18p
     <div class="hero-content">
       <span class="eyebrow">TikTok scenár · <code>SLUŽBY SLOVAK LINES – Preprava domácich miláčikov</code></span>
       <h1>Malý parťák na palube</h1>
-      
+
     </div>
   </header>
-  <section class="meta-grid"><article class="meta-card"><span class="label">TÉMA / RUBRIKA</span><span class="val"><code>SLUŽBY SLOVAK LINES – Preprava domácich miláčikov</code></span></article><article class="meta-card"><span class="label">REFERENCIA (LINK)</span><span class="val">bez referencie</span></article><article class="meta-card"><span class="label">KOMPARZ / OBSADENIE</span><span class="val">Timea + Mirko + malý pes alebo mačka v uzavretej prepravke</span></article></section>
-  
-  <section class="content"><div><article class="section"><h2>TEXT – VIDEO</h2><div class="hook"><span class="hdl-chip">HDL</span><div>KEĎ TVOJ PES ZISTÍ, ŽE IDE DO VIEDNE S TEBOU</div></div>
+<section class="meta-grid"><article class="meta-card"><span class="label">TÉMA / RUBRIKA</span><span class="val"><code>SLUŽBY SLOVAK LINES – Preprava domácich miláčikov</code></span></article><article class="meta-card"><span class="label">REFERENCIA (LINK)</span><span class="val">bez referencie</span></article><article class="meta-card"><span class="label">KOMPARZ / OBSADENIE</span><span class="val">Timea + Mirko + malý pes alebo mačka v uzavretej prepravke</span></article></section>
+<section class="client-review" aria-label="Schválenie a poznámky klienta">
+    <div class="client-review-inner" id="client-review-panel">
+      <label class="approval-control" for="client-approved">
+        <input type="checkbox" id="client-approved">
+        <span class="approval-copy"><strong>Schválené klientom</strong><small id="client-approval-state">Čaká na schválenie</small></span>
+      </label>
+      <label class="client-notes-control" for="client-notes">
+        <span class="field-label">Poznámky klienta</span>
+        <textarea id="client-notes" rows="3" placeholder="Sem klient dopíše pripomienky alebo komentár…"></textarea>
+      </label>
+      <span class="save-status" id="client-save-status" role="status" aria-live="polite">Ukladá sa automaticky</span>
+    </div>
+  </section>
+
+<section class="content"><div><article class="section"><h2>TEXT – VIDEO</h2><div class="hook"><span class="hdl-chip">HDL</span><div>KEĎ TVOJ PES ZISTÍ, ŽE IDE DO VIEDNE S TEBOU</div></div>
 <div class="timeline">
 <div class="beat"><span class="num">1</span><div><p class="line">Timea prichádza k autobusu s uzavretou prepravkou. Z prepravky sa ozve tiché zaškrabanie alebo zamňaučanie.</p></div></div>
 <div class="beat"><span class="num">2</span><div><p class="line">Mirko sa nakloní k prepravke:</p><p class="line">„A ty cestuješ kam?“</p></div></div>
@@ -158,8 +191,68 @@ Malý pes alebo mačka do 10 kg môže cestovať s tebou vo vhodnej uzavretej pr
 #slovaklines #slovaklinestok #cestovaniesopsom #cestovaniesmackou #vieden</div></article></aside></section>
   <footer class="footer">
     <span><strong>Slovak Lines × PS:Digital</strong> · podklad na TikTok scenár</span>
-    <span>14.07.2026</span>
+    <span>16.07.2026</span>
   </footer>
 </main>
+
+<script>
+(() => {
+  'use strict';
+  const approved = document.getElementById('client-approved');
+  const notes = document.getElementById('client-notes');
+  const panel = document.getElementById('client-review-panel');
+  const approvalState = document.getElementById('client-approval-state');
+  const saveStatus = document.getElementById('client-save-status');
+  if (!approved || !notes || !panel) return;
+
+  const fileName = decodeURIComponent(window.location.pathname.split('/').pop() || document.title);
+  const scenarioId = fileName.replace(/\.html?$/i, '') || 'scenario';
+  const storageKey = `sl-scenario-review:${scenarioId}`;
+  let saveTimer;
+
+  function paint() {
+    panel.classList.toggle('is-approved', approved.checked);
+    approvalState.textContent = approved.checked ? 'Schválené' : 'Čaká na schválenie';
+  }
+
+  function readState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      approved.checked = saved.approved === true;
+      notes.value = typeof saved.notes === 'string' ? saved.notes : '';
+      saveStatus.textContent = 'Automaticky uložené v tomto prehliadači';
+    } catch (error) {
+      saveStatus.textContent = 'Lokálne ukladanie nie je dostupné';
+    }
+    paint();
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({
+        approved: approved.checked,
+        notes: notes.value,
+        updatedAt: new Date().toISOString()
+      }));
+      saveStatus.textContent = 'Uložené';
+    } catch (error) {
+      saveStatus.textContent = 'Poznámky sa nepodarilo uložiť';
+    }
+    paint();
+  }
+
+  approved.addEventListener('change', saveState);
+  notes.addEventListener('input', () => {
+    saveStatus.textContent = 'Ukladám…';
+    window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(saveState, 250);
+  });
+  window.addEventListener('storage', (event) => {
+    if (event.key === storageKey) readState();
+  });
+  readState();
+})();
+</script>
+
 </body>
 </html>
