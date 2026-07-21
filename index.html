@@ -21,11 +21,19 @@ button,a{font:inherit}
 dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;box-shadow:0 28px 90px rgba(17,17,17,.28)}dialog::backdrop{background:rgba(17,17,17,.62);backdrop-filter:blur(3px)}.dialog-body{padding:26px}.dialog-kicker{display:inline-flex;margin-bottom:14px;padding:6px 10px;border-radius:999px;background:var(--soft-red);color:#a9000f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}dialog h2{margin:0;font-size:30px;line-height:1.05;letter-spacing:-.04em}dialog p{margin:14px 0 24px;color:var(--muted);line-height:1.65}.close{min-height:46px;padding:11px 18px;border:0;border-radius:999px;background:#111;color:#fff;font-weight:800;cursor:pointer}.close:focus-visible{outline:3px solid rgba(255,0,22,.28);outline-offset:3px}
 @media(max-width:680px){.page{width:min(100% - 20px,1040px);margin:10px auto;border-radius:24px}.header,.catalog{padding-left:18px;padding-right:18px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:36px}.scenario{grid-template-columns:48px minmax(0,1fr);gap:14px;padding:15px}.number{width:46px;height:46px;border-radius:15px}.open{grid-column:2;margin-top:2px}.catalog-head,.footer{align-items:flex-start;flex-direction:column}}
 .status-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}.status-row .status{margin:0}
-.approval-status{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eee9e5;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
-.approval-status::before{content:"";width:7px;height:7px;margin-right:6px;border-radius:50%;background:#aaa19a}
+.status--progress{color:var(--ink)}
+.approval-status{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#fff0d8;color:#9a5a00;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.approval-status::before{content:"";width:7px;height:7px;margin-right:6px;border-radius:50%;background:#e99b28}
 .approval-status.approved{background:#dff7e9;color:#087141}.approval-status.approved::before{background:#1a9b60}
+.approval-status.rejected{background:#ffe0e0;color:#ad1717}.approval-status.rejected::before{background:#d62424}
+.feedback-status{display:none;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3949a0;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.feedback-status.has-feedback{display:inline-flex}
 .scenario--approved{border-color:#9bd8b8;background:#f2fbf6;box-shadow:inset 5px 0 0 #1a9b60}
 .scenario--approved .number,.scenario--approved .open b{background:#1a9b60}
+.scenario--rejected{border-color:#f1aaaa;background:#fff5f5;box-shadow:inset 5px 0 0 #d62424}
+.scenario--rejected .number,.scenario--rejected .open b{background:#d62424}
+.scenario--waiting{border-color:#efc075;background:#fffaf0;box-shadow:inset 5px 0 0 #e99b28}
+.scenario--waiting .number,.scenario--waiting .open b{background:#e99b28}
 @media(prefers-reduced-motion:reduce){.scenario{transition:none}}
 </style>
 </head>
@@ -34,18 +42,18 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
   <header class="header">
     <div class="topbar">
       <div class="logos"><span class="logo"><img src="data:image/png;base64,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" alt="Slovak Lines"></span><span class="logo"><img src="data:image/png;base64,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" alt="PS:Digital"></span></div>
-      <span class="count">2 hotové · 8 ukážkových</span>
+      <span class="count" id="status-count">0 schválené · 2 čakajú · 0 neschválené · 8 v procese</span>
     </div>
-    <div class="heading"><span class="eyebrow">TikTok produkcia</span><h1>Scenáre Slovak Lines</h1><p class="intro">Vyber si scenár zo zoznamu. Kliknutím otvoríš jeho celý text, záberovanie, poznámky aj popis.</p></div>
+    <div class="heading"><span class="eyebrow">TikTok produkcia</span><h1>Scenáre Slovak Lines · August</h1><p class="intro">Vyber si scenár zo zoznamu. Kliknutím otvoríš jeho celý text, záberovanie, poznámky aj popis.</p></div>
   </header>
   <section class="catalog" aria-labelledby="catalog-title">
-    <div class="catalog-head"><h2 id="catalog-title">Zoznam scenárov</h2><p class="legend">Červené číslo = hotový detail</p></div>
+    <div class="catalog-head"><h2 id="catalog-title">Zoznam scenárov</h2><p class="legend">Zelené = schválené · oranžové = čaká na schválenie · červené = neschválené · čierne/sivé = v procese tvorby</p></div>
     <ol class="scenarios">
       <li>
         <a class="scenario scenario--ready" href="scenare/vodici-odovzdavanie-autobusu.html" data-scenario-id="vodici-odovzdavanie-autobusu" aria-label="Otvoriť scenár 1: Keď odovzdávaš autobus kolegovi">
           <span class="number" aria-hidden="true">1</span>
           <span class="scenario-copy">
-            <span class="status-row"><span class="status status--ready">Hotový scenár</span><span class="approval-status" data-approval-status>Čaká na schválenie</span></span>
+            <span class="status-row"><span class="approval-status" data-approval-status>Čaká na schválenie</span><span class="feedback-status" data-feedback-status aria-label="Scenár má poznámky od klienta">💬 Feedback</span></span>
             <strong>Keď odovzdávaš autobus kolegovi</strong>
             <small>VODIČI · Mirko + Maťo</small>
           </span>
@@ -56,7 +64,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <a class="scenario scenario--ready" href="scenare/sziget-nalahko.html" data-scenario-id="sziget-nalahko" aria-label="Otvoriť scenár 2: Sziget naľahko">
           <span class="number" aria-hidden="true">2</span>
           <span class="scenario-copy">
-            <span class="status-row"><span class="status status--ready">Hotový scenár</span><span class="approval-status" data-approval-status>Čaká na schválenie</span></span>
+            <span class="status-row"><span class="approval-status" data-approval-status>Čaká na schválenie</span><span class="feedback-status" data-feedback-status aria-label="Scenár má poznámky od klienta">💬 Feedback</span></span>
             <strong>Sziget naľahko</strong>
             <small>CESTUJÚCI · Maťo Vitek + Timea</small>
           </span>
@@ -67,7 +75,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="3" aria-label="Zobraziť detail ukážkového scenára 3">
           <span class="number" aria-hidden="true">3</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 3</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -78,7 +86,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="4" aria-label="Zobraziť detail ukážkového scenára 4">
           <span class="number" aria-hidden="true">4</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 4</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -89,7 +97,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="5" aria-label="Zobraziť detail ukážkového scenára 5">
           <span class="number" aria-hidden="true">5</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 5</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -100,7 +108,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="6" aria-label="Zobraziť detail ukážkového scenára 6">
           <span class="number" aria-hidden="true">6</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 6</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -111,7 +119,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="7" aria-label="Zobraziť detail ukážkového scenára 7">
           <span class="number" aria-hidden="true">7</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 7</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -122,7 +130,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="8" aria-label="Zobraziť detail ukážkového scenára 8">
           <span class="number" aria-hidden="true">8</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 8</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -133,7 +141,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="9" aria-label="Zobraziť detail ukážkového scenára 9">
           <span class="number" aria-hidden="true">9</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 9</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -144,7 +152,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         <button class="scenario scenario--placeholder" type="button" data-number="10" aria-label="Zobraziť detail ukážkového scenára 10">
           <span class="number" aria-hidden="true">10</span>
           <span class="scenario-copy">
-            <span class="status">Ukážka</span>
+            <span class="status status--progress">Scenár v procese</span>
             <strong>Ukážkový scenár 10</strong>
             <small>Placeholder · obsah bude doplnený</small>
           </span>
@@ -166,21 +174,49 @@ document.querySelector('.close').addEventListener('click', () => dialog.close())
 dialog.addEventListener('click', (event) => {if (event.target === dialog) dialog.close();});
 
 const reviewCards = [...document.querySelectorAll('[data-scenario-id]')];
+const statusCount = document.querySelector('#status-count');
+const progressCount = document.querySelectorAll('.scenario--placeholder').length;
+
+function reviewSummary(review) {
+  if (Array.isArray(review?.rounds)) {
+    const rounds = review.rounds;
+    let status = 'waiting';
+    for (let index = rounds.length - 1; index >= 0; index -= 1) {
+      const round = rounds[index] || {};
+      if (round.status === 'waiting' && String(round.notes || '').trim()) {status = 'waiting'; break;}
+      if (round.status === 'approved' || round.status === 'rejected') {status = round.status; break;}
+    }
+    return {status, hasFeedback: rounds.some((round) => String(round?.notes || '').trim())};
+  }
+  return {
+    status: review?.approved === true ? 'approved' : 'waiting',
+    hasFeedback: Boolean(String(review?.notes || '').trim())
+  };
+}
+
 function paintReviewStatus(card) {
   const badge = card.querySelector('[data-approval-status]');
+  const feedbackBadge = card.querySelector('[data-feedback-status]');
   const storageKey = `sl-scenario-review:${card.dataset.scenarioId}`;
-  let isApproved = false;
-  try {
-    const review = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    isApproved = review.approved === true;
-  } catch (error) {
-    isApproved = false;
-  }
-  card.classList.toggle('scenario--approved', isApproved);
-  badge.classList.toggle('approved', isApproved);
-  badge.textContent = isApproved ? 'Schválené klientom' : 'Čaká na schválenie';
+  let summary = {status: 'waiting', hasFeedback: false};
+  try {summary = reviewSummary(JSON.parse(localStorage.getItem(storageKey) || '{}'));}
+  catch (error) {summary = {status: 'waiting', hasFeedback: false};}
+
+  card.classList.remove('scenario--approved', 'scenario--rejected', 'scenario--waiting');
+  card.classList.add(`scenario--${summary.status}`);
+  badge.classList.remove('approved', 'rejected');
+  if (summary.status === 'approved') badge.classList.add('approved');
+  if (summary.status === 'rejected') badge.classList.add('rejected');
+  badge.textContent = summary.status === 'approved' ? 'Schválené' : summary.status === 'rejected' ? 'Neschválené' : 'Čaká na schválenie';
+  feedbackBadge.classList.toggle('has-feedback', summary.hasFeedback);
+  return summary.status;
 }
-function paintAllReviewStatuses() {reviewCards.forEach(paintReviewStatus);}
+
+function paintAllReviewStatuses() {
+  const counts = {approved: 0, waiting: 0, rejected: 0};
+  reviewCards.forEach((card) => {counts[paintReviewStatus(card)] += 1;});
+  statusCount.textContent = `${counts.approved} schválené · ${counts.waiting} čakajú · ${counts.rejected} neschválené · ${progressCount} v procese`;
+}
 paintAllReviewStatuses();
 window.addEventListener('pageshow', paintAllReviewStatuses);
 window.addEventListener('storage', (event) => {
