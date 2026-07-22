@@ -50,7 +50,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
     <div class="catalog-head"><h2 id="catalog-title">Zoznam scenárov</h2><p class="legend">Zelené = schválené · oranžové = čaká na schválenie · červené = neschválené · čierne/sivé = v procese tvorby</p></div>
     <ol class="scenarios">
       <li>
-        <a class="scenario scenario--ready" href="scenare/vodici-odovzdavanie-autobusu.html" data-scenario-id="vodici-odovzdavanie-autobusu" aria-label="Otvoriť scenár 1: Keď odovzdávaš autobus kolegovi">
+        <a class="scenario scenario--ready" href="scenare/vodici-odovzdavanie-autobusu.html" data-scenario-id="vodici-odovzdavanie-autobusu" data-static-feedback="true" aria-label="Otvoriť scenár 1: Keď odovzdávaš autobus kolegovi">
           <span class="number" aria-hidden="true">1</span>
           <span class="scenario-copy">
             <span class="status-row"><span class="approval-status" data-approval-status>Čaká na schválenie</span><span class="feedback-status" data-feedback-status aria-label="Scenár má poznámky od klienta">💬 Feedback</span></span>
@@ -61,7 +61,7 @@ dialog{width:min(520px,calc(100% - 32px));padding:0;border:0;border-radius:26px;
         </a>
       </li>
       <li>
-        <a class="scenario scenario--ready" href="scenare/sziget-nalahko.html" data-scenario-id="sziget-nalahko" aria-label="Otvoriť scenár 2: Sziget naľahko">
+        <a class="scenario scenario--ready" href="scenare/sziget-nalahko.html" data-scenario-id="sziget-nalahko" data-static-feedback="true" aria-label="Otvoriť scenár 2: Sziget naľahko">
           <span class="number" aria-hidden="true">2</span>
           <span class="scenario-copy">
             <span class="status-row"><span class="approval-status" data-approval-status>Čaká na schválenie</span><span class="feedback-status" data-feedback-status aria-label="Scenár má poznámky od klienta">💬 Feedback</span></span>
@@ -197,6 +197,7 @@ function reviewSummary(review) {
 function paintReviewStatus(card) {
   const badge = card.querySelector('[data-approval-status]');
   const feedbackBadge = card.querySelector('[data-feedback-status]');
+  const hasStaticFeedback = card.dataset.staticFeedback === 'true';
   const storageKey = `sl-scenario-review:${card.dataset.scenarioId}`;
   let summary = {status: 'waiting', hasFeedback: false};
   try {summary = reviewSummary(JSON.parse(localStorage.getItem(storageKey) || '{}'));}
@@ -208,7 +209,7 @@ function paintReviewStatus(card) {
   if (summary.status === 'approved') badge.classList.add('approved');
   if (summary.status === 'rejected') badge.classList.add('rejected');
   badge.textContent = summary.status === 'approved' ? 'Schválené' : summary.status === 'rejected' ? 'Neschválené' : 'Čaká na schválenie';
-  feedbackBadge.classList.toggle('has-feedback', summary.hasFeedback);
+  feedbackBadge.classList.toggle('has-feedback', summary.hasFeedback || hasStaticFeedback);
   return summary.status;
 }
 
